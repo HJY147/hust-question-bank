@@ -7,10 +7,10 @@ mode con cols=80 lines=30
 
 echo.
 echo ==============================================================
-echo           HUST搜题系统 - 虚拟环境修复工具
+echo           Fix Virtual Environment
 echo ==============================================================
 echo.
-echo 本工具将删除损坏的虚拟环境并重新创建
+echo This tool will remove damaged venv and recreate it
 echo.
 
 REM 检查Python
@@ -53,9 +53,9 @@ echo ✓ 虚拟环境创建成功
 echo.
 echo ==============================================================
 echo.
-echo [成功] 修复完成！
+echo [SUCCESS] Fix Complete!
 echo.
-echo 下一步：双击运行 "首次安装.bat" 安装依赖
+echo Next: Run "First Install.bat" to install dependencies
 echo.
 echo ==============================================================
 echo.

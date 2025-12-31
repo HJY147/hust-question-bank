@@ -7,7 +7,7 @@ mode con cols=80 lines=30
 
 echo.
 echo ==============================================================
-echo              HUST搜题系统 - 启动服务器
+echo              HUST Question Bank - Server
 echo ==============================================================
 echo.
 
@@ -37,11 +37,11 @@ if not exist "backend\app_simple.py" (
 
 REM 启动服务器
 echo.
-echo 正在启动服务器...
+echo Starting server...
 echo.
 echo ==============================================================
-echo  访问地址: http://localhost:5000
-echo  按 Ctrl+C 停止服务器
+echo  URL: http://localhost:5000
+echo  Press Ctrl+C to stop
 echo ==============================================================
 echo.
 

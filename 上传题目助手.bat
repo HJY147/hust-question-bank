@@ -7,21 +7,21 @@ mode con cols=90 lines=35
 
 echo.
 echo ==============================================================
-echo              HUST搜题系统 - 上传题目助手
+echo           Upload Question Helper
 echo ==============================================================
 echo.
-echo 本工具帮助你快速上传题目到系统
+echo This tool helps you upload questions quickly
 echo.
 
 :MENU
 echo ==============================================================
-echo  请选择操作：
+echo  Select Option:
 echo ==============================================================
-echo  1. 上传图片题目（手动）
-echo  2. PDF转图片
-echo  3. 批量重命名文件
-echo  4. 查看题库统计
-echo  5. 退出
+echo  1. Upload Images (Manual)
+echo  2. Convert PDF to Images
+echo  3. Batch Rename Files
+echo  4. View Statistics
+echo  5. Exit
 echo ==============================================================
 echo.
 
@@ -42,7 +42,7 @@ goto MENU
 cls
 echo.
 echo ==============================================================
-echo  上传图片题目
+echo  Upload Image Questions
 echo ==============================================================
 echo.
 echo 步骤：
@@ -74,7 +74,7 @@ goto MENU
 cls
 echo.
 echo ==============================================================
-echo  PDF转图片
+echo  Convert PDF to Images
 echo ==============================================================
 echo.
 echo 正在检查依赖...
@@ -108,7 +108,7 @@ goto MENU
 cls
 echo.
 echo ==============================================================
-echo  批量重命名文件
+echo  Batch Rename Files
 echo ==============================================================
 echo.
 echo 示例：将文件批量重命名为 calc_001, calc_002...
@@ -145,7 +145,7 @@ goto MENU
 cls
 echo.
 echo ==============================================================
-echo  题库统计
+echo  Question Bank Statistics
 echo ==============================================================
 echo.
 echo 📊 题目图片数量:

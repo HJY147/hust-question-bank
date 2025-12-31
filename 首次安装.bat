@@ -9,13 +9,12 @@ mode con cols=80 lines=30
 
 echo.
 echo ==============================================================
-echo           HUST搜题系统 - 首次安装向导
+echo           HUST Question Bank - First Install
 echo ==============================================================
 echo.
-echo  本脚本将自动完成以下操作：
-echo  1. 检查Python环境
-echo  2. 创建虚拟环境
-echo  3. 安装依赖包（使用清华镜像源）
+echo  Step 1: Check Python
+echo  Step 2: Create Virtual Environment
+echo  Step 3: Install Dependencies (Tsinghua Mirror)
 echo ==============================================================
 echo.
 
@@ -99,13 +98,13 @@ if errorlevel 1 (
 )
 
 echo.
-echo [OK] 所有依赖安装完成！
+echo [OK] All dependencies installed!
 echo.
 echo ==============================================================
 echo.
-echo [成功] 安装成功！
+echo [SUCCESS] Installation Complete!
 echo.
-echo 下一步：双击运行 "启动服务器.bat" 启动系统
+echo Next: Run "Start Server.bat" to start the system
 echo.
 echo ==============================================================
 echo.
