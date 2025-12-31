@@ -1,0 +1,10 @@
+# HUST搜题系统 - 核心依赖
+# 安装命令: pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+flask==2.3.0
+flask-cors==4.0.0
+waitress==2.1.2
+Pillow>=10.0.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+

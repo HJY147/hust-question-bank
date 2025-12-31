@@ -1,0 +1,25 @@
+
+## 解答
+
+**分析：** 使用能量守恒定理
+
+**第一步：计算转动惯量**
+绕一端转动的均匀细杆：
+$$I = \frac{1}{3}mL^2$$
+
+**第二步：计算质心下降高度**
+质心在杆中点，下降高度为：
+$$h = \frac{L}{2}\sin\theta$$
+
+**第三步：能量守恒**
+重力势能转化为转动动能：
+$$mg \cdot \frac{L}{2}\sin\theta = \frac{1}{2}I\omega^2$$
+
+$$mg \cdot \frac{L}{2}\sin\theta = \frac{1}{2} \cdot \frac{1}{3}mL^2 \cdot \omega^2$$
+
+**第四步：求解角速度**
+$$\omega^2 = \frac{3g\sin\theta}{L}$$
+
+$$\omega = \sqrt{\frac{3g\sin\theta}{L}}$$
+
+**答案：** $\boxed{\omega = \sqrt{\frac{3g\sin\theta}{L}}}$

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- 梧桐叶暗纹 - 可平铺背景 -->
+  <defs>
+    <pattern id="leafPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- 单个梧桐叶 -->
+      <g opacity="0.15">
+        <!-- 叶片主体 -->
+        <path d="M 50 20 Q 60 25, 65 35 Q 68 45, 65 55 Q 60 65, 50 70 Q 40 65, 35 55 Q 32 45, 35 35 Q 40 25, 50 20 Z" 
+              fill="#005AA7"/>
+        
+        <!-- 叶脉 -->
+        <line x1="50" y1="20" x2="50" y2="70" stroke="#003366" stroke-width="1"/>
+        <line x1="50" y1="30" x2="40" y2="35" stroke="#003366" stroke-width="0.5"/>
+        <line x1="50" y1="40" x2="42" y2="42" stroke="#003366" stroke-width="0.5"/>
+        <line x1="50" y1="50" x2="42" y2="52" stroke="#003366" stroke-width="0.5"/>
+        <line x1="50" y1="30" x2="60" y2="35" stroke="#003366" stroke-width="0.5"/>
+        <line x1="50" y1="40" x2="58" y2="42" stroke="#003366" stroke-width="0.5"/>
+        <line x1="50" y1="50" x2="58" y2="52" stroke="#003366" stroke-width="0.5"/>
+      </g>
+    </pattern>
+  </defs>
+  
+  <!-- 应用图案 -->
+  <rect width="200" height="200" fill="url(#leafPattern)"/>
+</svg>

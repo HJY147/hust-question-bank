@@ -1,0 +1,12 @@
+解：
+使用分部积分法：∫ u dv = uv - ∫ v du
+
+令：u = x,  dv = e^x dx
+则：du = dx,  v = e^x
+
+代入公式：
+∫ x·e^x dx = x·e^x - ∫ e^x dx
+           = x·e^x - e^x + C
+           = e^x(x - 1) + C
+
+答案：e^x(x - 1) + C

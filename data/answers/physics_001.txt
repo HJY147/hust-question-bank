@@ -1,0 +1,18 @@
+
+## 解答
+
+**已知条件：**
+- 质量 $m = 2\text{kg}$
+- 高度 $h = 10\text{m}$
+- 重力加速度 $g = 10\text{m/s}^2$
+- 初速度 $v_0 = 0$
+
+**方法一：运动学公式**
+$$v^2 = v_0^2 + 2gh = 0 + 2 \times 10 \times 10 = 200$$
+$$v = \sqrt{200} = 10\sqrt{2} \approx 14.14\text{m/s}$$
+
+**方法二：能量守恒**
+$$mgh = \frac{1}{2}mv^2$$
+$$v = \sqrt{2gh} = \sqrt{2 \times 10 \times 10} = 10\sqrt{2}\text{m/s}$$
+
+**答案：** $\boxed{10\sqrt{2} \approx 14.14\text{m/s}}$
