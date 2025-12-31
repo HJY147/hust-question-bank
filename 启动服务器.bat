@@ -1,7 +1,9 @@
 @echo off
-chcp 65001 >nul
+chcp 65001 >nul 2>&1
+REG ADD "HKCU\Console" /v FaceName /t REG_SZ /d "Consolas" /f >nul 2>&1
 title HUST搜题系统 - 服务器
 color 0B
+mode con cols=80 lines=30
 
 echo.
 echo ╔══════════════════════════════════════════════════════════════╗

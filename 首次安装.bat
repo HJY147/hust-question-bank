@@ -1,7 +1,11 @@
 @echo off
-chcp 65001 >nul
+REM 设置UTF-8编码
+chcp 65001 >nul 2>&1
+REM 设置控制台字体为Consolas或新宋体（支持中文）
+REG ADD "HKCU\Console" /v FaceName /t REG_SZ /d "Consolas" /f >nul 2>&1
 title HUST搜题系统 - 首次安装
 color 0A
+mode con cols=80 lines=30
 
 echo.
 echo ╔══════════════════════════════════════════════════════════════╗
