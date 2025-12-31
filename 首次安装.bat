@@ -39,7 +39,22 @@ REM 创建虚拟环境
 echo.
 echo [2/4] 创建虚拟环境...
 if exist ".venv" (
-    echo ✓ 虚拟环境已存在，跳过创建
+    echo ⚠ 检测到已有虚拟环境，验证是否可用...
+    REM 测试虚拟环境是否正常
+    .venv\Scripts\python.exe --version >nul 2>&1
+    if errorlevel 1 (
+        echo ❌ 虚拟环境已损坏，正在重新创建...
+        rmdir /s /q .venv
+        python -m venv .venv
+        if errorlevel 1 (
+            echo ❌ 创建虚拟环境失败！
+            pause
+            exit /b 1
+        )
+        echo ✓ 虚拟环境重建成功
+    ) else (
+        echo ✓ 虚拟环境正常，跳过创建
+    )
 ) else (
     python -m venv .venv
     if errorlevel 1 (
