@@ -33,7 +33,7 @@ if "%choice%"=="3" goto RENAME
 if "%choice%"=="4" goto STATS
 if "%choice%"=="5" exit /b 0
 
-echo 无效选项，请重试
+echo Invalid option, please try again
 timeout /t 2 >nul
 cls
 goto MENU
@@ -45,27 +45,27 @@ echo ==============================================================
 echo  Upload Image Questions
 echo ==============================================================
 echo.
-echo 步骤：
-echo 1. 将题目图片复制到 photo\ 目录
-echo 2. 创建对应的答案文件到 data\answers\ 目录
+echo Steps:
+echo 1. Copy question images to photo\ folder
+echo 2. Create answer files in data\answers\ folder
 echo.
-echo 文件命名规则：
-echo   calc_001.jpg  → data\answers\calc_001.txt
-echo   phys_002.png  → data\answers\phys_002.txt
+echo File naming rules:
+echo   calc_001.jpg  -> data\answers\calc_001.txt
+echo   phys_002.png  -> data\answers\phys_002.txt
 echo.
-echo 学科缩写：
-echo   calc    - 高等数学
-echo   phys    - 大学物理
-echo   circuit - 电路分析
-echo   linear  - 线性代数
-echo   prob    - 概率论
+echo Subject codes:
+echo   calc    - Calculus
+echo   phys    - Physics
+echo   circuit - Circuit
+echo   linear  - Linear Algebra
+echo   prob    - Probability
 echo.
-echo 按任意键打开文件夹...
+echo Press any key to open folders...
 pause >nul
 explorer photo
 explorer data\answers
 echo.
-echo 完成后按任意键返回主菜单...
+echo Press any key to return to menu...
 pause >nul
 cls
 goto MENU
@@ -77,29 +77,29 @@ echo ==============================================================
 echo  Convert PDF to Images
 echo ==============================================================
 echo.
-echo 正在检查依赖...
+echo Checking dependencies...
 .venv\Scripts\python.exe -c "import fitz" 2>nul
 if errorlevel 1 (
     echo.
-    echo ❌ 缺少依赖包！正在安装...
+    echo [X] Missing dependencies! Installing...
     .venv\Scripts\pip.exe install PyMuPDF Pillow -i https://pypi.tuna.tsinghua.edu.cn/simple --quiet
-    echo ✓ 依赖安装完成
+    echo [OK] Dependencies installed
 )
 echo.
-set /p pdf_path="请输入PDF文件路径（或拖拽文件到此处）: "
-REM 去除引号
+set /p pdf_path="Enter PDF file path (or drag file here): "
+REM Remove quotes
 set pdf_path=%pdf_path:"=%
 if not exist "%pdf_path%" (
-    echo ❌ 文件不存在
+    echo [X] File not found
     pause
     cls
     goto MENU
 )
 echo.
-echo 正在转换...
+echo Converting...
 .venv\Scripts\python.exe scripts\pdf转图片.py "%pdf_path%"
 echo.
-echo 按任意键返回主菜单...
+echo Press any key to return to menu...
 pause >nul
 cls
 goto MENU
@@ -111,32 +111,32 @@ echo ==============================================================
 echo  Batch Rename Files
 echo ==============================================================
 echo.
-echo 示例：将文件批量重命名为 calc_001, calc_002...
+echo Example: Rename files to calc_001, calc_002...
 echo.
-set /p folder="请输入要重命名的文件夹路径: "
+set /p folder="Enter folder path: "
 set folder=%folder:"=%
 if not exist "%folder%" (
-    echo ❌ 文件夹不存在
+    echo [X] Folder not found
     pause
     cls
     goto MENU
 )
 echo.
-set /p prefix="请输入文件名前缀（如 calc, phys）: "
-set /p start_num="请输入起始序号（默认1）: "
+set /p prefix="Enter file prefix (e.g. calc, phys): "
+set /p start_num="Enter start number (default 1): "
 if "%start_num%"=="" set start_num=1
 echo.
-echo 将要重命名 %folder% 中的文件为 %prefix%_001, %prefix%_002...
-set /p confirm="确认吗？(y/n): "
+echo Will rename files in %folder% to %prefix%_001, %prefix%_002...
+set /p confirm="Confirm? (y/n): "
 if /i not "%confirm%"=="y" (
     cls
     goto MENU
 )
 echo.
-echo 正在重命名...
-powershell -Command "$i=%start_num%; Get-ChildItem '%folder%' -File | ForEach-Object { $ext=$_.Extension; $newName='%prefix%_{0:D3}{1}' -f $i,$ext; Rename-Item $_.FullName $newName; Write-Host \"✓ $($_.Name) → $newName\"; $i++ }"
+echo Renaming...
+powershell -Command "$i=%start_num%; Get-ChildItem '%folder%' -File | ForEach-Object { $ext=$_.Extension; $newName='%prefix%_{0:D3}{1}' -f $i,$ext; Rename-Item $_.FullName $newName; Write-Host \"[OK] $($_.Name) -> $newName\"; $i++ }"
 echo.
-echo ✓ 重命名完成！
+echo [OK] Rename complete!
 pause
 cls
 goto MENU
@@ -148,18 +148,18 @@ echo ==============================================================
 echo  Question Bank Statistics
 echo ==============================================================
 echo.
-echo 📊 题目图片数量:
+echo [Stats] Question images:
 powershell -Command "(Get-ChildItem photo -File -Exclude '*.md','*.txt').Count"
 echo.
-echo 📝 答案文件数量:
+echo [Stats] Answer files:
 powershell -Command "(Get-ChildItem data\answers -File -Exclude '.gitkeep').Count"
 echo.
-echo 📂 文件列表:
+echo [List] Files:
 echo.
-echo --- 题目图片 ---
+echo --- Question Images ---
 dir /b photo | findstr /v ".md .txt"
 echo.
-echo --- 答案文件 ---
+echo --- Answer Files ---
 dir /b data\answers | findstr /v ".gitkeep"
 echo.
 pause
