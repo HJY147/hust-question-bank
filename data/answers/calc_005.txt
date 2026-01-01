@@ -1,12 +1,24 @@
-解：
-使用分部积分法：∫ u dv = uv - ∫ v du
+## 解答
 
-令：u = x,  dv = e^x dx
-则：du = dx,  v = e^x
+**题目：** 求不定积分 $\int x \cdot e^x dx$
 
-代入公式：
-∫ x·e^x dx = x·e^x - ∫ e^x dx
-           = x·e^x - e^x + C
-           = e^x(x - 1) + C
+**方法：分部积分法**
 
-答案：e^x(x - 1) + C
+分部积分公式：
+$$\int u \, dv = uv - \int v \, du$$
+
+**第一步：设置 $u$ 和 $dv$**
+
+令：
+- $u = x$ → $du = dx$
+- $dv = e^x dx$ → $v = e^x$
+
+**第二步：代入公式**
+
+$$\int x \cdot e^x dx = x \cdot e^x - \int e^x dx$$
+
+$$= x \cdot e^x - e^x + C$$
+
+$$= e^x(x - 1) + C$$
+
+**答案：** $\boxed{e^x(x - 1) + C}$

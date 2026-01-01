@@ -246,7 +246,7 @@ class DoubaoVision:
             print(f"[OCR] 使用豆包官方SDK进行OCR识别")
             print(f"[Info] Endpoint: {self.endpoint_id}")
             
-            # 优化：使用更短的提示词和更少的token，加快OCR识别速度
+            # 优化：针对数学公式和学术题目优化提示词，提高识别准确度
             response = self.client.chat.completions.create(
                 model=self.endpoint_id,
                 messages=[
@@ -255,7 +255,17 @@ class DoubaoVision:
                         "content": [
                             {
                                 "type": "text",
-                                "text": "识别图中文字。"  # 优化：最简提示词
+                                "text": """请精确识别图片中的所有内容，包括：
+1. 所有文字（中文、英文、数字）
+2. 数学公式、符号、上下标
+3. 特殊符号、希腊字母
+4. 题号、序号
+
+要求：
+- 保持原有排版和格式
+- 数学公式用LaTeX格式表示（如 $x^2$, $$\\frac{a}{b}$$）
+- 不要添加任何解释，只输出识别的内容
+- 准确识别所有符号，如 ∫∑∏√∞≈≠≤≥±×÷"""
                             },
                             {
                                 "type": "image_url", 
@@ -266,7 +276,7 @@ class DoubaoVision:
                         ]
                     }
                 ],
-                max_tokens=config.MAX_TOKENS,  # 优化：使用配置的token限制
+                max_tokens=2000,
                 temperature=0.1
             )
             

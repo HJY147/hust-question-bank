@@ -311,6 +311,36 @@ h3 {
     opacity: 0.3;
 }
 
+/* AI解答按钮区域 */
+.ai-answer-section .card {
+    background: linear-gradient(135deg, #f0f4ff 0%, #faf0ff 100%);
+    transition: all 0.3s ease;
+}
+
+.ai-answer-section .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.ai-answer-section .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.ai-answer-section .btn-primary:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.ai-answer-section .btn-primary:disabled {
+    opacity: 0.8;
+    cursor: wait;
+}
+
 .result-item:hover {
     border-color: var(--hust-blue);
     box-shadow: var(--shadow-hover);
@@ -378,17 +408,47 @@ h3 {
     overflow-y: auto;
 }
 
-/* LaTeX公式样式优化 */
+/* LaTeX公式样式优化 - 增强版 */
 .answer-content .katex {
-    font-size: 1.1em;
-    color: var(--hust-blue);
+    font-size: 1.15em;
+    color: var(--text-dark);
 }
 
+/* 行内公式样式 */
+.answer-content .katex-html {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* 块级公式样式 */
 .answer-content .katex-display {
-    margin: 1.2em 0;
-    padding: var(--spacing-md);
-    background-color: var(--bg-white);
-    border-radius: var(--radius-small);
+    margin: 1.5em 0;
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fb 100%);
+    border-radius: var(--radius-medium);
+    border: 1px solid #e1e4e8;
+    box-shadow: 0 2px 8px rgba(0, 90, 167, 0.05);
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.answer-content .katex-display > .katex {
+    font-size: 1.2em;
+    text-align: center;
+}
+
+/* 渲染成功的元素添加动画效果 */
+.answer-content.math-rendered {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0.8;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 /* Markdown内容样式 */
@@ -1302,6 +1362,166 @@ body.dark-mode kbd {
     border-color: #444;
     color: #eaeaea;
     box-shadow: inset 0 -1px 0 #444;
+}
+
+/* ==================== 题目图片样式 ==================== */
+.question-image-section {
+    background: var(--bg-gray);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-md);
+}
+
+.question-image-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: var(--radius-medium);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s ease;
+}
+
+.question-image-container:hover {
+    box-shadow: var(--shadow-hover);
+    transform: scale(1.02);
+}
+
+.question-thumbnail {
+    max-width: 300px;
+    max-height: 200px;
+    display: block;
+    border-radius: var(--radius-medium);
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 90, 167, 0.8));
+    padding: 20px 10px 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-overlay span {
+    color: white;
+    font-size: 12px;
+}
+
+.question-image-container:hover .image-overlay {
+    opacity: 1;
+}
+
+/* ==================== 图片模态框 ==================== */
+.image-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.image-modal-content {
+    background: white;
+    border-radius: var(--radius-large);
+    max-width: 90%;
+    max-height: 90%;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.image-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--hust-blue);
+    color: white;
+    font-weight: 600;
+}
+
+.image-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+    transition: transform 0.2s;
+}
+
+.image-modal-close:hover {
+    transform: scale(1.2);
+}
+
+.image-modal-body {
+    padding: 20px;
+    background: var(--bg-gray);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.image-modal-body .full-image {
+    max-width: 100%;
+    max-height: 65vh;
+    object-fit: contain;
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-large);
+}
+
+.image-modal-footer {
+    padding: 15px 20px;
+    background: white;
+    border-top: 1px solid var(--bg-gray);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* 深色模式下的图片模态框 */
+body.dark-mode .image-modal-content {
+    background: #1e1e1e;
+}
+
+body.dark-mode .image-modal-body {
+    background: #252525;
+}
+
+body.dark-mode .image-modal-footer {
+    background: #1e1e1e;
+    border-top-color: #333;
+}
+
+body.dark-mode .question-image-section {
+    background: #252525;
 }
 
 /* ==================== 打印样式 ==================== */

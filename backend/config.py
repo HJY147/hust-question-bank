@@ -94,13 +94,13 @@ class Config:
     
     # ========== AI功能开关 ==========
     AI_FALLBACK_THRESHOLD: float = float(os.getenv('AI_FALLBACK_THRESHOLD', '0.6'))
-    AI_TIMEOUT: int = int(os.getenv('AI_TIMEOUT', '15'))  # 优化：减少超时时间到15秒，加快响应
+    AI_TIMEOUT: int = int(os.getenv('AI_TIMEOUT', '60'))  # 增加超时到60秒，允许深度思考
     ENABLE_AI_SOLVER: bool = os.getenv('ENABLE_AI_SOLVER', 'true').lower() == 'true'
     ENABLE_IMAGE_OCR: bool = os.getenv('ENABLE_IMAGE_OCR', 'true').lower() == 'true'
     
     # ========== 性能优化配置 ==========
-    MAX_TOKENS: int = int(os.getenv('MAX_TOKENS', '1200'))  # 减少token数量加快生成
-    AI_TEMPERATURE: float = float(os.getenv('AI_TEMPERATURE', '0.1'))  # 降低随机性提高速度
+    MAX_TOKENS: int = int(os.getenv('MAX_TOKENS', '8000'))  # 增加token限制支持详细解答
+    AI_TEMPERATURE: float = float(os.getenv('AI_TEMPERATURE', '0.3'))  # 适中的随机性，保持准确性
     STREAM_RESPONSE: bool = os.getenv('STREAM_RESPONSE', 'false').lower() == 'true'  # 流式响应
     
     # ========== 机器学习配置 ==========

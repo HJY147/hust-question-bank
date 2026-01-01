@@ -5,8 +5,19 @@
  * 新增功能: 搜索历史、收藏功能、统计面板、快捷键支持
  */
 
-// API 基础URL
-const API_BASE_URL = 'http://localhost:5000/api';
+// API 基础URL - 动态获取（支持跨设备访问）
+// 如果通过IP访问，则使用当前host；否则使用localhost
+const getApiBaseUrl = () => {
+    const host = window.location.hostname;
+    // 如果是通过IP地址访问，使用相同的host
+    if (host !== 'localhost' && host !== '127.0.0.1') {
+        return `http://${host}:5000/api`;
+    }
+    // 默认使用localhost
+    return 'http://localhost:5000/api';
+};
+const API_BASE_URL = getApiBaseUrl();
+console.log('[HUST] API Base URL:', API_BASE_URL);
 
 // 全局变量
 let selectedFile = null;
@@ -183,11 +194,16 @@ async function performSearch() {
         searchBtn.disabled = false;
         
         if (data.success) {
+            // 保存OCR结果供后续AI使用
+            window.lastOcrResult = data.ocr_result;
+            window.lastKnowledgeTags = data.knowledge_tags;
+            window.lastQuestionType = data.question_type;
+            
             // 显示OCR结果
             displayOCRResult(data.ocr_result);
             
-            // 显示搜索结果
-            displayResults(data.results, data.ai_triggered);
+            // 显示搜索结果（优先题库匹配）
+            displayResults(data.results, false);
             
             // 添加搜索历史
             addSearchHistory({
@@ -196,7 +212,7 @@ async function performSearch() {
                 college: selectedCollege
             });
             
-            console.log('[HUST] 结果显示完成，共', data.results.length, '条');
+            console.log('[HUST] 结果显示完成，共', data.results.length, '条题库匹配');
         } else {
             throw new Error(data.error || '搜索失败');
         }
@@ -260,17 +276,34 @@ function displayOCRResult(ocrResult) {
 
 // 显示搜索结果
 function displayResults(results, aiTriggered = false) {
+    // 先显示AI解答按钮区域
+    let aiButtonHtml = `
+        <div class="ai-answer-section mb-3" id="aiAnswerSection">
+            <div class="card border-primary">
+                <div class="card-body text-center py-3">
+                    <h6 class="mb-2">🤖 需要AI智能解答？</h6>
+                    <p class="text-muted small mb-2">题库匹配结果不满意？点击下方按钮获取DeepSeek AI实时解答</p>
+                    <button class="btn btn-primary btn-lg" onclick="requestAIAnswer()" id="aiAnswerBtn">
+                        <span class="spinner-border spinner-border-sm d-none" id="aiSpinner"></span>
+                        🚀 使用AI解答
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="aiResultContainer"></div>
+    `;
+    
     if (results.length === 0) {
-        resultsArea.innerHTML = `
+        resultsArea.innerHTML = aiButtonHtml + `
             <div class="no-results">
                 <svg width="80" height="80" fill="currentColor" class="bi bi-inbox" viewBox="0 0 16 16">
                     <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4H4.98zm9.954 5H10.45a2.5 2.5 0 0 1-4.9 0H1.066l.32 2.562a.5.5 0 0 0 .497.438h12.234a.5.5 0 0 0 .496-.438L14.933 9zM3.809 3.563A1.5 1.5 0 0 1 4.981 3h6.038a1.5 1.5 0 0 1 1.172.563l3.7 4.625a.5.5 0 0 1 .105.374l-.39 3.124A1.5 1.5 0 0 1 14.117 13H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .106-.374l3.7-4.625z"/>
                 </svg>
-                <p class="mt-3 fw-bold text-hust-blue">未找到匹配的题目</p>
+                <p class="mt-3 fw-bold text-hust-blue">题库中未找到匹配的题目</p>
                 <p class="text-muted">
-                    题库中暂无相似题目，您可以：<br>
+                    您可以：<br>
+                    • 点击上方"使用AI解答"获取智能解答<br>
                     • 尝试更换图片或调整拍摄角度<br>
-                    • 选择对应学院提高匹配精度<br>
                     • <a href="#" class="text-hust-red">提交此题目</a>帮助完善题库
                 </p>
             </div>
@@ -278,17 +311,7 @@ function displayResults(results, aiTriggered = false) {
         return;
     }
     
-    let html = '<div class="results-container">';
-    
-    // 如果触发了AI解答，显示提示
-    if (aiTriggered) {
-        html += `
-            <div class="alert alert-info">
-                <strong>🤖 AI实时解答</strong><br>
-                <small>题库中未找到完全匹配的题目，已由DeepSeek AI为您生成解答</small>
-            </div>
-        `;
-    }
+    let html = aiButtonHtml + '<div class="results-container"><h5 class="mb-3">📚 题库匹配结果</h5>';
     
     results.forEach((result, index) => {
         const similarity = Math.round(result.similarity * 100);
@@ -300,7 +323,7 @@ function displayResults(results, aiTriggered = false) {
         const isHustExclusive = result.source === 'database' && similarity >= 80;
         const isAIAnswer = result.source === 'ai';
         
-        // 处理答案文本
+        // 处理答案文本 - 直接使用，不进行Base64编码
         const answerText = result.answer || '[暂无答案]';
         const answerId = `answer-${index}`;
         
@@ -363,11 +386,24 @@ function displayResults(results, aiTriggered = false) {
                     </small>
                 </div>` : ''}
                 
+                ${!isAIAnswer && result.image_url ? `
+                <div class="question-image-section mt-2 mb-3">
+                    <strong class="text-muted">📷 题目原图：</strong>
+                    <div class="question-image-container mt-2">
+                        <img src="${result.image_url}" 
+                             alt="题目图片" 
+                             class="question-thumbnail"
+                             onclick="showFullImage('${result.image_url}', '${result.question_id}')"
+                             title="点击查看大图">
+                        <div class="image-overlay">
+                            <span>🔍 点击放大</span>
+                        </div>
+                    </div>
+                </div>` : ''}
+                
                 <div class="answer-section mt-3">
                     <strong class="text-hust-blue">📖 详细解答：</strong>
-                    <div class="answer-content mt-2" id="${answerId}">
-                        ${answerText}
-                    </div>
+                    <div class="answer-content mt-2" id="${answerId}"></div>
                 </div>
                 
                 ${!isAIAnswer ? `
@@ -387,11 +423,14 @@ function displayResults(results, aiTriggered = false) {
     
     resultsArea.innerHTML = html;
     
-    // 渲染LaTeX和Markdown
+    // 渲染LaTeX和Markdown - 直接从result对象获取答案
     results.forEach((result, index) => {
         const answerId = `answer-${index}`;
         const element = document.getElementById(answerId);
-        if (element) {
+        if (element && result.answer) {
+            // 直接设置纯文本内容
+            element.textContent = result.answer;
+            // 渲染
             renderMathAndMarkdown(element);
         }
     });
@@ -399,47 +438,159 @@ function displayResults(results, aiTriggered = false) {
     console.log('[HUST] 结果渲染完成');
 }
 
-// LaTeX和Markdown渲染函数
+// 请求AI解答
+async function requestAIAnswer() {
+    const btn = document.getElementById('aiAnswerBtn');
+    const spinner = document.getElementById('aiSpinner');
+    const container = document.getElementById('aiResultContainer');
+    
+    if (!window.lastOcrResult || !window.lastOcrResult.text) {
+        showAlert('请先上传图片并搜索', 'warning');
+        return;
+    }
+    
+    // 显示加载状态
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> AI正在思考中...';
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/ai_answer`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: window.lastOcrResult.text,
+                subject: window.lastKnowledgeTags?.[0]?.name || '高等数学',
+                question_type: window.lastQuestionType || '综合类'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.ai_answer) {
+            // 显示AI解答
+            displayAIResult(data.ai_answer);
+            
+            // 更新按钮状态
+            btn.innerHTML = '✅ AI解答已生成';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-success');
+            
+            console.log('[HUST] AI解答生成成功');
+        } else {
+            throw new Error(data.error || 'AI解答生成失败');
+        }
+        
+    } catch (error) {
+        console.error('[HUST] AI解答错误:', error);
+        btn.disabled = false;
+        btn.innerHTML = '🚀 重试AI解答';
+        showAlert('AI解答失败: ' + error.message, 'danger');
+    }
+}
+
+// 显示AI解答结果
+function displayAIResult(aiAnswer) {
+    const container = document.getElementById('aiResultContainer');
+    
+    const html = `
+        <div class="result-item ai-answer-item" style="border: 2px solid #667eea; background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf2 100%);">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <h6 class="mb-1 fw-bold" style="color: #667eea;">
+                        🤖 DeepSeek AI 实时解答
+                    </h6>
+                    <span class="badge bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        ${aiAnswer.ai_model || 'DeepSeek'} AI
+                    </span>
+                    <span class="badge bg-success ms-1">实时生成</span>
+                </div>
+                <span class="similarity-badge bg-info">
+                    AI置信度: ${Math.round((aiAnswer.confidence || 0.98) * 100)}%
+                </span>
+            </div>
+            
+            <div class="answer-section mt-3">
+                <strong class="text-primary">📖 AI详细解答：</strong>
+                <div class="answer-content mt-2" id="ai-answer-content">
+                    ${aiAnswer.answer || '[暂无答案]'}
+                </div>
+            </div>
+            
+            <div class="mt-3 text-muted small">
+                💡 提示：AI解答仅供参考，建议结合教材和标准答案学习
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+    
+    // 渲染LaTeX
+    const element = document.getElementById('ai-answer-content');
+    if (element) {
+        renderMathAndMarkdown(element);
+    }
+    
+    // 滚动到AI解答位置
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// LaTeX和Markdown渲染函数 - 简洁高效版
 function renderMathAndMarkdown(element) {
     if (!element) return;
     
-    let content = element.textContent;
+    let content = element.textContent || '';
+    console.log('[HUST] 开始渲染，内容长度:', content.length);
     
-    // 首先处理Markdown
-    if (typeof marked !== 'undefined') {
-        marked.setOptions({
-            breaks: true,
-            gfm: true
-        });
-        
-        // 将换行符转换为<br>
-        content = content.replace(/\n\n/g, '<br><br>');
-        content = content.replace(/\n/g, '<br>');
-        
-        // 解析Markdown
-        content = marked.parse(content);
-        element.innerHTML = content;
-    }
+    // 检测是否为Markdown格式
+    const hasMarkdown = /^##\s/.test(content.trim()) || content.includes('\n##') || content.includes('**');
     
-    // 然后渲染LaTeX
-    if (typeof renderMathInElement !== 'undefined') {
-        try {
-            renderMathInElement(element, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false},
-                    {left: '\\[', right: '\\]', display: true},
-                    {left: '\\(', right: '\\)', display: false}
-                ],
-                throwOnError: false,
-                errorColor: '#D62612', // HUST红色
-                strict: false
-            });
-            console.log('[HUST] LaTeX渲染完成');
-        } catch (error) {
-            console.error('[HUST] LaTeX渲染错误:', error);
+    if (hasMarkdown) {
+        // Markdown格式：先渲染Markdown，再渲染LaTeX
+        if (typeof marked !== 'undefined') {
+            try {
+                // 直接使用marked渲染，不需要保护LaTeX（marked会保留$符号）
+                const html = marked.parse(content, {
+                    breaks: true,
+                    gfm: true
+                });
+                element.innerHTML = html;
+                console.log('[HUST] Markdown渲染完成');
+            } catch (error) {
+                console.error('[HUST] Markdown错误:', error);
+                element.innerHTML = content.replace(/\n/g, '<br>');
+            }
+        } else {
+            element.innerHTML = content.replace(/\n/g, '<br>');
         }
+    } else {
+        // 纯文本：直接显示
+        element.innerHTML = content.replace(/\n/g, '<br>');
     }
+    
+    // 渲染LaTeX公式（使用KaTeX）
+    setTimeout(() => {
+        if (typeof renderMathInElement !== 'undefined') {
+            try {
+                console.log('[HUST] 开始KaTeX渲染...');
+                renderMathInElement(element, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false,
+                    strict: false
+                });
+                console.log('[HUST] ✅ KaTeX渲染成功');
+            } catch (error) {
+                console.error('[HUST] KaTeX错误:', error);
+            }
+        } else {
+            console.error('[HUST] ❌ KaTeX未加载');
+        }
+    }, 50);
 }
 
 // HTML转义函数，防止XSS，但保留LaTeX公式符号
@@ -447,6 +598,73 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// 显示完整图片（模态框）
+function showFullImage(imageUrl, questionId) {
+    // 创建模态框
+    const modal = document.createElement('div');
+    modal.className = 'image-modal';
+    modal.innerHTML = `
+        <div class="image-modal-content">
+            <div class="image-modal-header">
+                <span>📷 题目 #${questionId}</span>
+                <button class="image-modal-close" onclick="closeImageModal()">&times;</button>
+            </div>
+            <div class="image-modal-body">
+                <img src="${imageUrl}" alt="题目图片" class="full-image">
+            </div>
+            <div class="image-modal-footer">
+                <button class="btn btn-sm btn-outline-primary" onclick="downloadImage('${imageUrl}', '${questionId}')">
+                    ⬇️ 下载图片
+                </button>
+                <button class="btn btn-sm btn-secondary" onclick="closeImageModal()">
+                    关闭
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // 点击背景关闭
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeImageModal();
+        }
+    });
+    
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+    
+    // ESC键关闭
+    document.addEventListener('keydown', handleEscKey);
+}
+
+// 关闭图片模态框
+function closeImageModal() {
+    const modal = document.querySelector('.image-modal');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', handleEscKey);
+    }
+}
+
+// ESC键处理
+function handleEscKey(e) {
+    if (e.key === 'Escape') {
+        closeImageModal();
+    }
+}
+
+// 下载图片
+function downloadImage(imageUrl, questionId) {
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = `${questionId}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showAlert('图片下载中...', 'info');
 }
 
 // 收藏题目
